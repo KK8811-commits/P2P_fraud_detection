@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fraudgraph_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - JWT_SECRET_KEY=prod-super-secure-fraud-intelligence-token-key-2026
+    volumes:
+      - backend_data:/app
+    networks:
+      - fraud_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fraudgraph_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - fraud_net
+
+volumes:
+  backend_data:
+
+networks:
+  fraud_net:
+    driver: bridge
